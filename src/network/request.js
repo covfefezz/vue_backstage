@@ -8,7 +8,10 @@ export function request(config) {
 
     //请求拦截器
     instance.interceptors.request.use(
-        config =>config,
+        config =>{
+            config.headers.Authorization = window.sessionStorage.getItem('token')
+            return config
+        },
         err => {}
     )
 
