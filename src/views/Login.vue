@@ -59,7 +59,6 @@
         this.$refs.loginFormRef.validate(valid=>{
           if(!valid)
             return
-          console.log(this.loginForm)
           login(this.loginForm)
             .then(res=>{
               if(res.meta.status===200){

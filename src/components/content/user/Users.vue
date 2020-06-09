@@ -1,11 +1,7 @@
 <template>
   <div>
     <!--面包屑导航区域-->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{path:'/welcome'}">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <breadcrumb :breadPath="breadPath"></breadcrumb>
 
     <!--卡片视图区域-->
     <el-card>
@@ -36,10 +32,10 @@
         <el-table-column label="操作">
           <template v-slot:default="scope">
             <el-tooltip effect="dark" content="编辑" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit"></el-button>
+              <el-button type="primary" icon="el-icon-edit" @click="userEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
-              <el-button type="danger" icon="el-icon-delete"></el-button>
+              <el-button type="danger" icon="el-icon-delete" @click="removeUser(scope.row.id)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="改变用户角色" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting"></el-button>
@@ -61,17 +57,22 @@
     </el-card>
 
     <!--添加用户的对话框-->
-    <user-add-dialog ref="userDialog" @addUserSuc="addUserSuc"></user-add-dialog>
+    <user-add-dialog ref="userAddDialogRef" @addUserSuc="addUserSuc"></user-add-dialog>
+
+    <!--编辑用户信息的对话框-->
+    <user-edit-dialog ref="userEditDialogRef" @editUserSuc="editUserSuc"></user-edit-dialog>
   </div>
 </template>
 
 <script>
-  import {getUsers,userStatus} from "network/users";
+  import {getUsers,userStatus,removeUserById} from "network/users";
   import UserAddDialog from "./UserAddDialog";
+  import UserEditDialog from "./UserEditDialog";
+  import Breadcrumb from "components/common/Breadcrumb";
 
   export default {
     name: "Users",
-    components: {UserAddDialog},
+    components: {Breadcrumb, UserEditDialog, UserAddDialog},
     data(){
       return{
         userParam:{
@@ -81,7 +82,9 @@
         },
         userInfo:[],
         total:0,
-        dialogVisible:false
+        dialogVisible:false,
+        currentUserId:0,
+        breadPath:['用户管理','用户列表']
       }
     },
     created() {
@@ -126,12 +129,45 @@
 
       //弹出添加用户对话框
       userAddDialog(){
-        this.$refs.userDialog.dialogVisible = true
+        this.$refs.userAddDialogRef.dialogVisible = true
       },
 
       //用户添加成功，重新请求用户数据
       addUserSuc(){
         this.getUserInfo()
+      },
+
+      //弹出编辑用户对话框
+      userEditDialog(userId){
+        this.$refs.userEditDialogRef.userId = userId
+        this.$refs.userEditDialogRef.getUserInfo()
+        this.$refs.userEditDialogRef.dialogVisible = true
+      },
+
+      //用户信息编辑成功，重新请求用户数据
+      editUserSuc(){
+        this.getUserInfo()
+      },
+
+      //删除用户
+      removeUser(userId){
+        this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            removeUserById(userId)
+              .then(res=>{
+                if(res.meta.status !== 200)
+                  return this.$message.error('删除用户失败')
+                this.$message.success('用户删除成功')
+                this.getUserInfo()
+              })
+          })
+          .catch(() => {
+            this.$message.info('已取消删除')
+          });
       }
     }
   }

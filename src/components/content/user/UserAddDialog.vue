@@ -17,32 +17,17 @@
     <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addUserSubmit">确 定</el-button>
-      </span>
+    </span>
   </el-dialog>
 </template>
 
 <script>
   import {addUser} from "network/users";
+  import {checkEmail,checkMobile} from "common/utils";
 
   export default {
     name: "UserAddDialog",
     data(){
-      //自定义邮箱验证规则
-      let checkEmail = (rule,value,callback)=>{
-        const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
-        if(regEmail.test(value))
-          callback()
-        else
-          callback(new Error('请检查邮箱格式'))
-      }
-      //自定义手机号码验证规则
-      let checkMobile = (rule,value,callback)=>{
-        const regMobile = /^1[3456789]\d{9}$/
-        if(regMobile.test(value))
-          callback()
-        else
-          callback(new Error('请检查手机号码'))
-      }
       return{
         //对话框是否可见属性
         dialogVisible:false,
@@ -86,7 +71,6 @@
           if(!valid)
             return this.$message.error('请检查提示错误的地方')
           addUser(this.addForm).then(res=>{
-              console.log(res)
               if(res.meta.status !== 201)
                 return this.$message.error('添加用户失败')
               this.$message.success('添加用户成功')

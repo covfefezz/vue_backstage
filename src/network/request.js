@@ -18,7 +18,10 @@ export function request(config) {
     //响应拦截器
     instance.interceptors.response.use(
         res => res.data,
-        err => {console.log(err);}
+        err => {
+            console.log('-----响应拦截器--错误拦截---')
+            console.log(err);
+        }
     )
 
     return instance(config)

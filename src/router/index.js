@@ -5,7 +5,7 @@ const Login=()=> import('views/Login')
 const Home=()=> import('views/home/Home')
 const Welcome=()=> import('components/content/Welcome')
 const Users=()=> import('components/content/user/Users')
-const Rights=()=> import('components/content/rights/Rights')
+const Rights=()=> import('components/content/permission/Rights')
 
 Vue.use(VueRouter)
 
