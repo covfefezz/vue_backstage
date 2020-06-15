@@ -6,6 +6,7 @@ const Home=()=> import('views/home/Home')
 const Welcome=()=> import('components/content/Welcome')
 const Users=()=> import('components/content/user/Users')
 const Rights=()=> import('components/content/permission/Rights')
+const Roles=()=> import('components/content/permission/Roles')
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,10 @@ Vue.use(VueRouter)
         {
           path:'/rights',
           component:Rights
+        },
+        {
+          path:'/roles',
+          component:Roles
         }
       ]
     }
