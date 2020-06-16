@@ -33,10 +33,10 @@
         dialogVisible:false,
         //表单内容
         addForm:{
-          username:'woailuo3',
-          password:'woailuo',
-          email:'woailuo@163.com',
-          mobile:'13800139226'
+          username:'',
+          password:'',
+          email:'',
+          mobile:''
         },
         //表单内容验证规则
         addFormRules:{

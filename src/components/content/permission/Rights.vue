@@ -32,13 +32,13 @@
     data(){
       return{
         breadPath:['权限管理','权限列表'],
-        rightsInfo:[]
+        rightsInfo:[],
       }
     },
 
     created() {
       //获取权限列表数据
-      getRights()
+      getRights('list')
         .then(res=>{
           if(res.meta.status !==200)
             return this.$message.error(res.meta.msg)
