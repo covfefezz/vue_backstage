@@ -52,3 +52,14 @@ export function removeUserById(userId) {
     method:'delete'
   })
 }
+
+//分配用户角色
+export function setUserRole(userId,roleId) {
+  return request({
+    url:`users/${userId}/role`,
+    method:'put',
+    data:{
+      rid:roleId
+    }
+  })
+}

@@ -37,8 +37,8 @@
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
               <el-button type="danger" icon="el-icon-delete" @click="removeUser(scope.row.id)"></el-button>
             </el-tooltip>
-            <el-tooltip effect="dark" content="改变用户角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting"></el-button>
+            <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-setting" @click="setRole(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -61,11 +61,32 @@
 
     <!--编辑用户信息的对话框-->
     <user-edit-dialog ref="userEditDialogRef" @editUserSuc="editUserSuc"></user-edit-dialog>
+
+    <!--分配用户角色的对话框-->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="30%">
+      <p>用户姓名：{{currentUser.username}}</p>
+      <p>现有角色：{{currentUser.role_name}}</p>
+      <p>选择角色：
+        <el-select v-model="selectRoleId" placeholder="请选择">
+          <el-option
+            v-for="item in roleList"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRoleSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-  import {getUsers,userStatus,removeUserById} from "network/users";
+  import {getUsers,userStatus,removeUserById,setUserRole} from "network/users";
+  import {getRoles} from "network/permission";
   import UserAddDialog from "./UserAddDialog";
   import UserEditDialog from "./UserEditDialog";
   import Breadcrumb from "components/common/Breadcrumb";
@@ -84,7 +105,11 @@
         total:0,
         dialogVisible:false,
         currentUserId:0,
-        breadPath:['用户管理','用户列表']
+        breadPath:['用户管理','用户列表'],
+        currentUser:{},
+        setRoleDialogVisible:false,
+        roleList:[],
+        selectRoleId:''
       }
     },
     created() {
@@ -168,6 +193,33 @@
           .catch(() => {
             this.$message.info('已取消删除')
           });
+      },
+
+      //分配用户角色
+      setRole(user){
+        this.selectRoleId=''
+        this.currentUser = user
+        getRoles()
+          .then(res=>{
+            if(res.meta.status !==200)
+              return this.$message.error(res.meta.msg)
+            this.roleList = res.data
+          })
+        this.setRoleDialogVisible = true
+      },
+
+      //分配用户角色提交
+      setRoleSubmit(){
+        if(!this.selectRoleId)
+          return this.$message.error('请选择一个角色')
+        setUserRole(this.currentUser.id,this.selectRoleId)
+          .then(res=>{
+            if(res.meta.status !== 200)
+              return this.$message.error(res.meta.msg)
+            this.$message.success(res.meta.msg)
+            this.getUserInfo()
+            this.setRoleDialogVisible = false
+          })
       }
     }
   }
