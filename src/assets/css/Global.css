@@ -10,3 +10,7 @@ html,body,#app{
 #app{
     min-width: 1400px;
 }
+
+.el-step__title{
+    font-size: 12px;
+}

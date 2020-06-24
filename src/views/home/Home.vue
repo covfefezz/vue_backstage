@@ -16,7 +16,7 @@
           <div class="toggleButton" @click="toggleCollapse">菜单</div>
           <!--侧边栏菜单区域-->
           <el-menu background-color="#333744" text-color="#fff"  active-text-color="#ffd04b" :unique-opened='false'
-                   :collapse="isCollapse" :collapse-transition="false" router :default-active="$route.path">
+                   :collapse="isCollapse" :collapse-transition="false" router :default-active="activeIndex">
             <!--一级菜单-->
             <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
               <!--一级菜单栏模板-->
@@ -63,6 +63,11 @@
           '145':'el-icon-s-data'
         },
         isCollapse:false
+      }
+    },
+    computed:{
+      activeIndex(){
+        return( "/"+this.$route.path.split("/")[1])
       }
     },
     created(){
